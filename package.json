@@ -1,0 +1,18 @@
+{
+  "type": "module",
+  "name": "tweetbotv2",
+  "version": "0.1.0",
+  "description": "Updated Discord Twitter bot using Node.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "author": "jamesm2w",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "discord.js": "^13.6.0",
+    "dotenv": "^16.0.0",
+    "mongodb": "^4.4.1",
+    "twitter-api-v2": "^1.11.2"
+  }
+}
