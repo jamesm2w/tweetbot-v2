@@ -11,9 +11,9 @@ const debug_discordWebhookClient = new WebhookClient({ url: process.env.DEBUG_WE
 
 const dbClient = new MongoClient(process.env.CONNECTIONSTRING);
 
-const sendInfoMessage = async (content) => {
+const sendInfoMessage = async (content, level=0) => {
     debug_discordWebhookClient.send({
-        content: `<@${process.env.OWNER}>`,
+        content: level > 0 ? `<@${process.env.OWNER}> Urgent:` : "Info:",
         embeds: [{
             description: content
         }]
@@ -85,19 +85,34 @@ const connectStream = async () => {
     
     stream.on(ETwitterStreamEvent.ConnectionLost, () => {
         console.log("Lost Connection to Twitter");
-        sendInfoMessage("Tweetbot CONNECTION LOST to Stream API")
+        sendInfoMessage("Tweetbot CONNECTION LOST to Stream API", 1);
     });
 
     stream.on(ETwitterStreamEvent.ConnectionClosed, () => {
         console.log("Twitter Stream Closed");
-        sendInfoMessage("Tweetbot CONNECTION CLOSED to Stream API");
+        sendInfoMessage("Tweetbot CONNECTION CLOSED to Stream API", 1);
     })
     
-    stream.on(ETwitterStreamEvent.Error, (err) => {
+    stream.on(ETwitterStreamEvent.Error, (err) => { // When twitter sends something which could not be JSON parsed or network error 
         console.log("Stream Error");
         console.error("Stream Error. ", err.message);
         console.error("Twitter Information, ", err.error.data);
+        console.log(err);
         sendInfoMessage("Tweetbot encountered unexpected error with Stream API");
+    });
+
+    stream.on(ETwitterStreamEvent.ReconnectAttempt, () => {
+        console.log("Reconnect Attempt");
+    });
+
+    stream.on(ETwitterStreamEvent.Reconnected, () => {
+        console.log("Reconnected")
+        sendInfoMessage("Tweetbot reconnected to Stream API", 1);
+    });
+
+    stream.on(ETwitterStreamEvent.ReconnectLimitExceeded, () => {
+        console.log("Reconnect Limit Exceeded");
+        sendInfoMessage("Tweetbot reconnect limit exceeded to Stream API. Will not try again.", 1);
     });
 
     await stream.connect({ autoReconnect: true, autoReconnectRetries: 10 });
