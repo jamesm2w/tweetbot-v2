@@ -1,0 +1,12 @@
+version: "3.7"
+services:
+  bot:
+    build: .
+    environment:
+      - API_KEY=${API_KEY}
+      - API_SECRET=${API_SECRET}
+      - BEARER_TOKEN=${BEARER_TOKEN}
+      - CONNECTIONSTRING=${CONNECTIONSTRING}
+      - PORT=${PORT}
+      - DEBUG_WEBHOOK_URL=${DEBUG_WEBHOOK_URL}
+      - OWNER=${OWNER}
